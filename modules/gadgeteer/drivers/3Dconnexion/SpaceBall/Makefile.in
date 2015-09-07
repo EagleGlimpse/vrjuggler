@@ -54,6 +54,14 @@ endif
 endif
 endif
 
+ifeq (@PLATFORM@, Darwin)
+BUILD_DRIVER= Y
+SRCS= PuckDeviceDarwin.cpp
+
+POST_DSO_DRIVER_DEPS+=	-framework IOKit -framework CoreFoundation
+C_AFTERBUILD=	driver-dso
+endif
+
 include $(MKPATH)/dpp.obj.mk
 include @topdir@/driver.defs.mk
 

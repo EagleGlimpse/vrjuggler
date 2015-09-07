@@ -23,14 +23,17 @@
 //--  02111-1307  USA                                                       --
 //----------------------------------------------------------------------------
 
-#include "puck_device.h"
-
 #include <gadget/Type/DeviceConstructor.h>
 #include <gadget/Util/Debug.h>
 #include <gadget/Devices/DriverConfig.h>
 
 #include <stdio.h>
 #include <fcntl.h>
+
+// Only valid for linux
+#if defined(VPR_OS_Linux) || defined(linux_x86_64)
+
+#include "puck_device.h"
 
 #if defined(WIN32) || defined(WIN64)
 # include <sys/types.h>
@@ -173,7 +176,7 @@ bool PuckDevice::sample()
 	analogData submit(6);
 	for (unsigned int i = 0; i < _axes.size(); i++)
 	{
-	    submit[i] = _axes[i].getValue();
+		submit[i] = _axes[i].getValue();
 	}
 	gadget::Analog::addAnalogSample(submit);
 	return true;
@@ -198,11 +201,11 @@ bool PuckDevice::sampleRel()
     {
 	for (int i = 0 ; i < 6 ; i++)
 	{
-	    if (localAxes[i].getValue() != 0.0f)
-	    {
-		float value;
-		value = localAxes[i].getValue();
-		_axes[i] = _axes[i].getValue() + value;
+		if (localAxes[i].getValue() != 0.0f)
+		{
+			float value;
+			value = localAxes[i].getValue();
+			_axes[i] = _axes[i].getValue() + value;
 		_axesCount[i]++;
 	    }
 	}
@@ -258,14 +261,14 @@ void PuckDevice::initBuffers()
 {
     for (unsigned int i = 0; i < _axes.size(); i++)
     {
-	_axes[i] = 0.0f;
- 	_axesCount[i] = 0;
-    }
-    for (unsigned int i = 0; i < _buttons.size(); i++)
-	_buttons[i] = gadget::DigitalState::OFF;
+		_axes[i] = 0.0f;
+		_axesCount[i] = 0;
+	}
+	for (unsigned int i = 0; i < _buttons.size(); i++)
+		_buttons[i] = gadget::DigitalState::OFF;
 
     _updateCount = 0;
- 
+
     gadget::Digital::addDigitalSample(_buttons);
     gadget::Analog::addAnalogSample(_axes);
 }
@@ -1188,18 +1191,18 @@ void spaceMouse::processDigitalData(const unsigned char* buffer,
 	( (buffer[1] & NIBBLE_MASK) << 4) |
 	(buffer[0] & NIBBLE_MASK);
 
-    dig[0] = static_cast<gadget::DigitalState::State>(temp & BUTTON_1);
-    dig[1] = static_cast<gadget::DigitalState::State>(temp & BUTTON_2);
-    dig[2] = static_cast<gadget::DigitalState::State>(temp & BUTTON_3);
-    dig[3] = static_cast<gadget::DigitalState::State>(temp & BUTTON_4);
-    dig[4] = static_cast<gadget::DigitalState::State>(temp & BUTTON_5);
-    dig[5] = static_cast<gadget::DigitalState::State>(temp & BUTTON_6);
-    dig[6] = static_cast<gadget::DigitalState::State>(temp & BUTTON_7);
-    dig[7] = static_cast<gadget::DigitalState::State>(temp & BUTTON_8);
-    dig[8] = static_cast<gadget::DigitalState::State>(temp & BUTTON_9);
-    dig[9] = static_cast<gadget::DigitalState::State>(temp & BUTTON_10);
-    dig[10] = static_cast<gadget::DigitalState::State>(temp & BUTTON_11);
-    dig[11] = static_cast<gadget::DigitalState::State>(temp & BUTTON_12);
+	dig[0] = static_cast<gadget::DigitalState::State>(temp & BUTTON_1);
+	dig[1] = static_cast<gadget::DigitalState::State>(temp & BUTTON_2);
+	dig[2] = static_cast<gadget::DigitalState::State>(temp & BUTTON_3);
+	dig[3] = static_cast<gadget::DigitalState::State>(temp & BUTTON_4);
+	dig[4] = static_cast<gadget::DigitalState::State>(temp & BUTTON_5);
+	dig[5] = static_cast<gadget::DigitalState::State>(temp & BUTTON_6);
+	dig[6] = static_cast<gadget::DigitalState::State>(temp & BUTTON_7);
+	dig[7] = static_cast<gadget::DigitalState::State>(temp & BUTTON_8);
+	dig[8] = static_cast<gadget::DigitalState::State>(temp & BUTTON_9);
+	dig[9] = static_cast<gadget::DigitalState::State>(temp & BUTTON_10);
+	dig[10] = static_cast<gadget::DigitalState::State>(temp & BUTTON_11);
+	dig[11] = static_cast<gadget::DigitalState::State>(temp & BUTTON_12);
     
 
 
@@ -1385,8 +1388,8 @@ bool spaceTraveler::processDigitalData(int buffer[], digitalData &dig)
     // This is struct input_event.code
     int button = buffer[0];
     // This is struct input_event.value
-    const gadget::DigitalState::State value =
-        static_cast<gadget::DigitalState::State>(buffer[1]);
+	const gadget::DigitalState::State value =
+		static_cast<gadget::DigitalState::State>(buffer[1]);
     if (     button == USB_BUTTON_1)
 	dig[0] = value;
     else if (button == USB_BUTTON_2)
@@ -1894,18 +1897,18 @@ e.g. The higher 4 bits of the first byte are always 01xy, where
 	( (buffer[0] & 63) << 7 );
     left_mode = (temp & LEFT_MODE) >> 12;
 
-    dig[0] = static_cast<gadget::DigitalState::State>(temp & BUTTON_1);
-    dig[1] = static_cast<gadget::DigitalState::State>(temp & BUTTON_2);
-    dig[2] = static_cast<gadget::DigitalState::State>(temp & BUTTON_3);
-    dig[3] = static_cast<gadget::DigitalState::State>(temp & BUTTON_4);
-    dig[4] = static_cast<gadget::DigitalState::State>(temp & BUTTON_5);
-    dig[5] = static_cast<gadget::DigitalState::State>(temp & BUTTON_6);
-    dig[6] = static_cast<gadget::DigitalState::State>(temp & BUTTON_7);
-    dig[7] = static_cast<gadget::DigitalState::State>(temp & BUTTON_8);
-    dig[8] = static_cast<gadget::DigitalState::State>(temp & BUTTON_9);
-    dig[9] = static_cast<gadget::DigitalState::State>(temp & BUTTON_10);
-    dig[10] = static_cast<gadget::DigitalState::State>(temp & BUTTON_11);
-    dig[11] = static_cast<gadget::DigitalState::State>(temp & BUTTON_12);
+	dig[0] = static_cast<gadget::DigitalState::State>(temp & BUTTON_1);
+	dig[1] = static_cast<gadget::DigitalState::State>(temp & BUTTON_2);
+	dig[2] = static_cast<gadget::DigitalState::State>(temp & BUTTON_3);
+	dig[3] = static_cast<gadget::DigitalState::State>(temp & BUTTON_4);
+	dig[4] = static_cast<gadget::DigitalState::State>(temp & BUTTON_5);
+	dig[5] = static_cast<gadget::DigitalState::State>(temp & BUTTON_6);
+	dig[6] = static_cast<gadget::DigitalState::State>(temp & BUTTON_7);
+	dig[7] = static_cast<gadget::DigitalState::State>(temp & BUTTON_8);
+	dig[8] = static_cast<gadget::DigitalState::State>(temp & BUTTON_9);
+	dig[9] = static_cast<gadget::DigitalState::State>(temp & BUTTON_10);
+	dig[10] = static_cast<gadget::DigitalState::State>(temp & BUTTON_11);
+	dig[11] = static_cast<gadget::DigitalState::State>(temp & BUTTON_12);
     
     return;
 }
@@ -2003,19 +2006,20 @@ e.g. The higher 4 bits of the first byte are always 010x, where
     */    
     int temp = (buffer[1] & 15) |
 	( (buffer[0] & 31) << 4 );
-    dig[0] = static_cast<gadget::DigitalState::State>(temp & BUTTON_1);
-    dig[1] = static_cast<gadget::DigitalState::State>(temp & BUTTON_2);
-    dig[2] = static_cast<gadget::DigitalState::State>(temp & BUTTON_3);
-    dig[3] = static_cast<gadget::DigitalState::State>(temp & BUTTON_4);
-    dig[4] = static_cast<gadget::DigitalState::State>(temp & BUTTON_5);
-    dig[5] = static_cast<gadget::DigitalState::State>(temp & BUTTON_6);
-    dig[6] = static_cast<gadget::DigitalState::State>(temp & BUTTON_7);
-    dig[7] = static_cast<gadget::DigitalState::State>(temp & BUTTON_8);
-    dig[8] = static_cast<gadget::DigitalState::State>(temp & BUTTON_9);
-    dig[9] = static_cast<gadget::DigitalState::State>(temp & BUTTON_10);
-    dig[10] = static_cast<gadget::DigitalState::State>(temp & BUTTON_11);
-    dig[11] = static_cast<gadget::DigitalState::State>(temp & BUTTON_12);
+	dig[0] = static_cast<gadget::DigitalState::State>(temp & BUTTON_1);
+	dig[1] = static_cast<gadget::DigitalState::State>(temp & BUTTON_2);
+	dig[2] = static_cast<gadget::DigitalState::State>(temp & BUTTON_3);
+	dig[3] = static_cast<gadget::DigitalState::State>(temp & BUTTON_4);
+	dig[4] = static_cast<gadget::DigitalState::State>(temp & BUTTON_5);
+	dig[5] = static_cast<gadget::DigitalState::State>(temp & BUTTON_6);
+	dig[6] = static_cast<gadget::DigitalState::State>(temp & BUTTON_7);
+	dig[7] = static_cast<gadget::DigitalState::State>(temp & BUTTON_8);
+	dig[8] = static_cast<gadget::DigitalState::State>(temp & BUTTON_9);
+	dig[9] = static_cast<gadget::DigitalState::State>(temp & BUTTON_10);
+	dig[10] = static_cast<gadget::DigitalState::State>(temp & BUTTON_11);
+	dig[11] = static_cast<gadget::DigitalState::State>(temp & BUTTON_12);
     return;
 }
 
 
+#endif

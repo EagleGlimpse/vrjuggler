@@ -26,7 +26,8 @@
 #ifndef fti_vriPuckDevice_h
 #define fti_vriPuckDevice_h
 
-
+// Only Valid for Linux
+#if defined(VPR_OS_Linux) || defined(linux_x86_64)
 
 #if defined(WIN32) || defined(WIN64)
 # include <windows.h>
@@ -808,9 +809,9 @@ class spaceBall2003B : public spaceBall4000FLX
 /** A driver for puck-like devices
 */
 class PuckDevice
-   : public gadget::InputDevice<
-               boost::mpl::inherit<gadget::Digital, gadget::Analog>::type
-            >
+	: public gadget::InputDevice<
+	boost::mpl::inherit<gadget::Digital, gadget::Analog>::type
+	>
 {
   public:
     /// constructor
@@ -900,4 +901,5 @@ class PuckDevice
 };
 //@}
 
+#endif
 #endif

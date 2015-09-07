@@ -43,6 +43,8 @@ InputArea::InputArea()
    , mLockStoredKey(-1)
    , mLockToggleKey(-1)
    , mSleepTimeMS(0)
+   , mLockXCenter(200)
+   , mLockYCenter(200)
    , mKeyboardMouseDevice(NULL)
 {
    /* Do nothing. */ ;
