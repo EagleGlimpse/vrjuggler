@@ -1,1 +1,12 @@
-gadgeteer_add_driver(SpaceBall puck_device.cpp puck_device.h space_ball.rc)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        add_definitions(-DMACOSX)
+        gadgeteer_add_driver(SpaceBall PuckDeviceDarwin.cpp PuckDeviceDarwin.h space_ball.rc)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        add_definitions(-DLINUX -DUNIX)
+        gadgeteer_add_driver(SpaceBall puck_device.cpp puck_device.h space_ball.rc)
+elseif(WIN32)
+        # No extra definitions needed
+        gadgeteer_add_driver(SpaceBall PuckDeviceWin32.cpp PuckDeviceWin32.h space_ball.rc)
+else()
+        message("CMAKE_SYSTEM_NAME is [${CMAKE_SYSTEM_NAME}]. We're not handling this case yet!")
+endif()

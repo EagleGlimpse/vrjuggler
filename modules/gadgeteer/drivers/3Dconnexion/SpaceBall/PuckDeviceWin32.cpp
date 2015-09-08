@@ -51,11 +51,11 @@ using std::endl;
 extern "C"
 {
     // Register this device with the Input Manager
-    GADGET_DRIVER_EXPORT(void) initDevice(gadget::InputManager* inputMgr)
+    GADGET_DRIVER_EXPORT void  initDevice(gadget::InputManager* inputMgr)
     { new gadget::DeviceConstructor<PuckDeviceWin32>(inputMgr); }
 
     // Provide entry point for loading shared object
-    GADGET_DRIVER_EXPORT(vpr::Uint32) getGadgeteerVersion()
+    GADGET_DRIVER_EXPORT vpr::Uint32 getGadgeteerVersion()
 	{ return __GADGET_version; }
 }
 
@@ -159,7 +159,7 @@ void PuckDeviceWin32::initBuffers()
     gadget::Analog::addAnalogSample(_axis);
 
     for (auto i = _buttons.begin() ; i != _buttons.end() ; ++i)
-	*i = 0;
+	*i = gadget::DigitalState::OFF;
     gadget::Digital::addDigitalSample(_buttons);
 }
 
@@ -327,14 +327,14 @@ bool PuckDeviceWin32::processRawInput(WPARAM inputCode, PRAWINPUT pRawInput)
     if (pRawInput->data.hid.bRawData[0] == 0x01) // Translation Vector
     {
 	short *data = reinterpret_cast<short *>(&pRawInput->data.hid.bRawData[1]);
-	_axis[0] = normalize( data[0]);
-	_axis[1] = normalize(-data[2]);
-	_axis[2] = normalize( data[1]);
+	_axis[0] =  data[0];
+	_axis[1] = -data[2];
+	_axis[2] =  data[1];
 	if (pRawInput->data.hid.dwSizeHid >= 13) // Highspeed package
 	{
-	    _axis[3] = normalize( data[3]);
-	    _axis[4] = normalize(-data[5]);
-	    _axis[5] = normalize( data[4]);
+	    _axis[3] =  data[3];
+	    _axis[4] = -data[5];
+	    _axis[5] =  data[4];
 	}
 	gadget::Analog::addAnalogSample(_axis);	
 	return true;
@@ -342,9 +342,9 @@ bool PuckDeviceWin32::processRawInput(WPARAM inputCode, PRAWINPUT pRawInput)
     else if (pRawInput->data.hid.bRawData[0] == 0x02) // Rotation Vector
     {
 	short *data = reinterpret_cast<short *>(&pRawInput->data.hid.bRawData[1]);
-	_axis[3] = normalize( data[0]);
-	_axis[4] = normalize(-data[2]);
-	_axis[5] = normalize( data[1]);
+	_axis[3] =  data[0];
+	_axis[4] = -data[2];
+	_axis[5] =  data[1];
 	gadget::Analog::addAnalogSample(_axis);	
 	return true;
     }
@@ -353,7 +353,7 @@ bool PuckDeviceWin32::processRawInput(WPARAM inputCode, PRAWINPUT pRawInput)
 	unsigned short keys = reinterpret_cast<unsigned short *>(&pRawInput->data.hid.bRawData[1])[0];
 
 	for(int i = 0 ; i < 15 ; ++i)
-	    _buttons[i] = (0x01 & (keys >> i));
+	    _buttons[i] = static_cast<gadget::DigitalState::State>(0x01 & (keys >> i));
 	gadget::Digital::addDigitalSample(_buttons);
 
 //	for (int i = 0 ; i < 15 ; ++i)

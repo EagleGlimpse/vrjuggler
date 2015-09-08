@@ -351,12 +351,12 @@ void PuckDeviceDarwin::onInputValue(SpaceBall::Io::Hid::Value &value)
     } else {
         switch(value.usage())
         {
-        case 48: _axis[0] = normalize( value.asShort()); break;
-        case 49: _axis[1] = normalize(-value.asShort()); break;
-        case 50: _axis[2] = normalize(-value.asShort()); break;
-        case 51: _axis[3] = normalize( value.asShort()); break;
-        case 52: _axis[4] = normalize(-value.asShort()); break;
-        case 53: _axis[5] = normalize(-value.asShort()); break;
+        case 48: _axis[0] =  value.asShort(); break;
+        case 49: _axis[1] = -value.asShort(); break;
+        case 50: _axis[2] = -value.asShort(); break;
+        case 51: _axis[3] =  value.asShort(); break;
+        case 52: _axis[4] = -value.asShort(); break;
+        case 53: _axis[5] = -value.asShort(); break;
         }
 	gadget::Analog::addAnalogSample(_axis);	
     }
@@ -366,7 +366,7 @@ void PuckDeviceDarwin::onInputValue(SpaceBall::Io::Hid::Value &value)
 void PuckDeviceDarwin::initBuffers()
 {
     for (std::vector<gadget::AnalogData>::iterator i = _axis.begin() ; i != _axis.end() ; ++i)
-	*i = normalize(0.0f);
+	*i = 0.0f;
     gadget::Analog::addAnalogSample(_axis);
 
     for (std::vector<gadget::DigitalData>::iterator i = _buttons.begin() ; i != _buttons.end() ; ++i)

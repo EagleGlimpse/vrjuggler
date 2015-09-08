@@ -36,24 +36,18 @@
 // Only Valid for Windows
 #if defined(WIN32) || defined(WIN64)
 
-#if(_WIN32_WINNT < 0x0501)
-#error "Need at least Windows XP to Compile"
-#endif
-
 #include <sdkddkver.h>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <WinUser.h>
 
+#include <boost/mpl/inherit.hpp>
 #include <gadget/gadgetParam.h>
-#include <gadget/Type/InputBaseTypes.h>
-#include <gadget/Type/Input.h>
-#include <gadget/Type/Digital.h>
-#include <gadget/Type/Analog.h>
-#include <gadget/InputManager.h>
+#include <gadget/Type/InputDevice.h>
 
 /// MS Windows Drivers for 3DConnexion Devices
-class PuckDeviceWin32 : public gadget::input_digital_analog_t
+class PuckDeviceWin32
+	: public gadget::InputDevice<boost::mpl::inherit<gadget::Digital, gadget::Analog>::type>
 {
 public:
     /// Constructor
@@ -109,9 +103,6 @@ private:
     ///
     int _updateCount;
     
-    float normalize(const float in)
-    { float out; gadget::Analog::normalizeMinToMax(in, out); return out; }
-
     /** @name WndProc callback Functions.
     ***
     *** These functions should be called from the main WndProc callback.
